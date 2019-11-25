@@ -4,12 +4,10 @@ import common.Area;
 import common.Person;
 import common.Task;
 
+import java.lang.reflect.Array;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /*
 Имеются
@@ -23,7 +21,10 @@ public class Task6 implements Task {
   private Set<String> getPersonDescriptions(Collection<Person> persons,
                                             Map<Integer, Set<Integer>> personAreaIds,
                                             Collection<Area> areas) {
-    return new HashSet<>();
+    return persons.stream().
+            flatMap(p -> areas.stream().filter(a -> personAreaIds.get(p.getId()).contains(a.getId())).map(a -> p.getFirstName() + " - " + a.getName())).
+            collect(Collectors.toSet());
+
   }
 
   @Override
