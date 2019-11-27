@@ -30,13 +30,13 @@ public class Task8 implements Task {
 
   // этот метод должен быть проперти класса Person
   public static String getFullName(Person person) {
-    var result = Stream.of(person.getSecondName(), person.getFirstName(), person.getMiddleName()).
-            filter(x -> x != null).
-            reduce((x1, x2) -> x1 + " " + x2);
-    return result.isPresent() ? result.get() : "";
+    return Stream.of(person.getSecondName(), person.getFirstName(), person.getMiddleName())
+        .filter(x -> x != null)
+        .collect(Collectors.joining(" "));
   }
 
   // словарь id персоны -> ее имя
+  // в целом ок, но создание new HashMap<>(1); с первоначальным размером словаря 1 не очень
   public static Map<Integer, String> getPersonNamesMap(Collection<Person> persons) {
     return persons.stream().collect(Collectors.toMap(p -> p.getId(), p -> getFullName(p), (p1, p2) -> p1));
   }
@@ -44,12 +44,11 @@ public class Task8 implements Task {
   // есть ли совпадающие в двух коллекциях персоны?
   public static boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
     var set1 = new HashSet<>(persons1);
-    var set2 = new HashSet<>(persons2);
-    set1.retainAll(set2);
-    return set1.size() > 0;
+    return persons2.stream().anyMatch(person -> set1.contains(person));
   }
 
   // размытая ответсвенность класса, надо перенесте в другой
+  // использовалась переменная класса count, вдруг кто то решился бы запустить метод в несколько потоков??
   public static long countEven(Stream<Integer> numbers) {
     return numbers.filter(num -> num % 2 == 0).count();
   }

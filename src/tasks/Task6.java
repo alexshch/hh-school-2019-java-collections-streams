@@ -8,6 +8,7 @@ import java.lang.reflect.Array;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /*
 Имеются
@@ -21,10 +22,12 @@ public class Task6 implements Task {
   private Set<String> getPersonDescriptions(Collection<Person> persons,
                                             Map<Integer, Set<Integer>> personAreaIds,
                                             Collection<Area> areas) {
-    return persons.stream().
-            flatMap(p -> areas.stream().filter(a -> personAreaIds.get(p.getId()).contains(a.getId())).map(a -> p.getFirstName() + " - " + a.getName())).
-            collect(Collectors.toSet());
 
+    var areaMap = areas.stream().collect(Collectors.toMap(item -> item.getId(), item -> item.getName()));
+    return persons.stream()
+        .flatMap(person -> personAreaIds.get(person.getId()).stream().sorted()
+        .map(areaId -> person.getFirstName() + " - " + areaMap.get(areaId)))
+        .collect(Collectors.toSet());
   }
 
   @Override
@@ -33,8 +36,9 @@ public class Task6 implements Task {
         new Person(1, "Oleg", Instant.now()),
         new Person(2, "Vasya", Instant.now())
     );
-    Map<Integer, Set<Integer>> personAreaIds = Map.of(1, Set.of(1, 2), 2, Set.of(2, 3));
+    Map<Integer, Set<Integer>> personAreaIds = Map.of(1, Set.of(1, 2), 2, Set.of(2, 3, 1));
     List<Area> areas = List.of(new Area(1, "Moscow"), new Area(2, "Spb"), new Area(3, "Ivanovo"));
+    var set = getPersonDescriptions(persons, personAreaIds, areas);
     return getPersonDescriptions(persons, personAreaIds, areas)
         .equals(Set.of("Oleg - Moscow", "Oleg - Spb", "Vasya - Spb", "Vasya - Ivanovo"));
   }

@@ -21,10 +21,10 @@ public class Task1 implements Task {
   // !!! Редактируйте этот метод !!!
   private List<Person> findOrderedPersons(List<Integer> personIds) {
     Set<Person> persons = PersonService.findPersons(personIds);
-    return personIds.stream().map(i -> persons.stream().filter(p -> i.equals(p.getId())).findFirst()).
-            filter(Optional::isPresent).
-            map(Optional::get).
-            collect(Collectors.toList());
+    var personMap = persons.stream().collect(Collectors.toMap(Person::getId, item -> item));
+    return personIds.stream()
+       .map(personId -> personMap.get(personId))
+       .collect(Collectors.toList());
   }
 
   @Override
