@@ -43,8 +43,8 @@ public class Task8 implements Task {
 
   // есть ли совпадающие в двух коллекциях персоны?
   public static boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
-    var set1 = new HashSet<>(persons1);
-    return persons2.stream().anyMatch(person -> set1.contains(person));
+    var personSet = new HashSet<>(persons1);
+    return persons2.stream().anyMatch(person -> personSet.contains(person));
   }
 
   // размытая ответсвенность класса, надо перенесте в другой

@@ -23,10 +23,10 @@ public class Task6 implements Task {
                                             Map<Integer, Set<Integer>> personAreaIds,
                                             Collection<Area> areas) {
 
-    var areaMap = areas.stream().collect(Collectors.toMap(item -> item.getId(), item -> item.getName()));
+    var areaNames = areas.stream().collect(Collectors.toMap(item -> item.getId(), item -> item.getName()));
     return persons.stream()
-        .flatMap(person -> personAreaIds.get(person.getId()).stream().sorted()
-        .map(areaId -> person.getFirstName() + " - " + areaMap.get(areaId)))
+        .flatMap(person -> (personAreaIds.containsKey(person.getId()) ? personAreaIds.get(person.getId()) : new HashSet<>()).stream()
+        .map(areaId -> person.getFirstName() + " - " + areaNames.get(areaId)))
         .collect(Collectors.toSet());
   }
 
@@ -34,9 +34,10 @@ public class Task6 implements Task {
   public boolean check() {
     List<Person> persons = List.of(
         new Person(1, "Oleg", Instant.now()),
-        new Person(2, "Vasya", Instant.now())
+        new Person(2, "Vasya", Instant.now()),
+         new Person(3, "Peotr", Instant.now())
     );
-    Map<Integer, Set<Integer>> personAreaIds = Map.of(1, Set.of(1, 2), 2, Set.of(2, 3, 1));
+    Map<Integer, Set<Integer>> personAreaIds = Map.of(1, Set.of(1, 2), 2, Set.of(2, 3), 3,  new HashSet<>());
     List<Area> areas = List.of(new Area(1, "Moscow"), new Area(2, "Spb"), new Area(3, "Ivanovo"));
     var set = getPersonDescriptions(persons, personAreaIds, areas);
     return getPersonDescriptions(persons, personAreaIds, areas)
